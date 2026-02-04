@@ -24,15 +24,20 @@ export default function CategoryScreen({ route, navigation, theme, textSize, isK
             )}
 
             {isKeyboardMode ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ flex: 1, padding: 10 }}>
                     <SentenceBar
                         theme={theme}
                         isKeyboardMode={isKeyboardMode}
                         textSize={textSize}
                     />
-                    <Text style={{ fontSize: textSize * 1.5, color: theme.subText, marginTop: 20 }}>
-                        Mod tastatura activ
-                    </Text>
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ fontSize: textSize * 1.5, color: theme.subText, textAlign: 'center' }}>
+                            Mod tastatura activ
+                        </Text>
+                        <Text style={{ fontSize: textSize * 1, color: theme.subText, marginTop: 10, textAlign: 'center' }}>
+                            Scrie si apasa "Vorbește"
+                        </Text>
+                    </View>
                 </View>
             ) : (
                 <View style={styles.gridArea}>

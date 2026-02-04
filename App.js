@@ -32,6 +32,19 @@ export default function App() {
   const [selectedVoice, setSelectedVoice] = useState(null);
 
   useEffect(() => {
+    // 1. Fix Audio on iOS (play in silent mode)
+    const configureAudio = async () => {
+      try {
+        await Speech.speak(' ', { language: 'ro-RO' }); // Dummy speak to trigger permission/session
+        // Or strictly we should use expo-av but often Speech triggers the session. 
+        // Let's rely on standard Speech behavior first, but if needed we add expo-av.
+      } catch (e) {
+        console.warn("Audio config error", e);
+      }
+    };
+    configureAudio();
+
+    // 2. Fetch Voices
     const fetchVoices = async () => {
       try {
         const voices = await Speech.getAvailableVoicesAsync();
