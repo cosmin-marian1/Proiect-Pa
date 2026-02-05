@@ -5,23 +5,25 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { themes } from './src/constants/theme';
 import { SentenceProvider } from './src/context/SentenceContext';
+import { VocabProvider } from './src/context/VocabContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 
 import HomeScreen from './src/screens/HomeScreen';
 import CategoryScreen from './src/screens/CategoryScreen';
 import SettingsModal from './src/components/SettingsModal';
+import AdminModal from './src/components/AdminModal';
 import { injectWebCss } from './src/utils/webStyles';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  injectWebCss(); // Inject scrollbar styles for Web
+  injectWebCss();
 
-  // --- STATE-URI GLOBALE (Setari) ---
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isKeyboardMode, setIsKeyboardMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   const [speechRate, setSpeechRate] = useState(0.9);
   const [voicePitch, setVoicePitch] = useState(1.0);
@@ -71,75 +73,93 @@ export default function App() {
   const settings = { speechRate, voicePitch, selectedVoice };
 
   return (
-    <SentenceProvider settings={settings}>
-      <NavigationContainer>
-        <StatusBar
-          barStyle={isDarkMode ? "light-content" : "dark-content"}
-          backgroundColor={currentTheme.bar}
-        />
+    <VocabProvider>
+      <SentenceProvider settings={settings}>
+        <NavigationContainer>
+          <StatusBar
+            barStyle={isDarkMode ? "light-content" : "dark-content"}
+            backgroundColor={currentTheme.bar}
+          />
 
-        <Stack.Navigator
-          screenOptions={({ navigation }) => ({
-            headerStyle: { backgroundColor: currentTheme.bar },
-            headerTintColor: currentTheme.text,
-            headerTitleStyle: { fontWeight: 'bold' },
-            headerRight: () => (
-              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => setIsKeyboardMode(!isKeyboardMode)}>
-                  <Ionicons
-                    name="keypad"
-                    size={24}
-                    color={isKeyboardMode ? currentTheme.accent : currentTheme.text}
-                  />
-                </TouchableOpacity>
+          <Stack.Navigator
+            screenOptions={({ navigation }) => ({
+              headerStyle: {
+                backgroundColor: currentTheme.bar,
+                elevation: 0, // Android
+                shadowOpacity: 0, // iOS
+                borderBottomWidth: 0, // Extra safety
+              },
+              headerShadowVisible: false, // React Navigation 6
+              headerTintColor: currentTheme.text,
+              headerTitleStyle: { fontWeight: 'bold' },
+              headerRight: () => (
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setIsKeyboardMode(!isKeyboardMode)}>
+                    <Ionicons
+                      name="keypad"
+                      size={24}
+                      color={isKeyboardMode ? currentTheme.accent : currentTheme.text}
+                    />
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)}>
-                  <Text style={{ fontSize: 20 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)}>
+                    <Text style={{ fontSize: 20 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setIsSettingsOpen(true)}>
-                  <Ionicons name="settings-sharp" size={24} color={currentTheme.text} />
-                </TouchableOpacity>
-              </View>
-            ),
-            contentStyle: { backgroundColor: currentTheme.bg }
-          })}
-        >
-          <Stack.Screen name="Home">
-            {(props) => (
-              <HomeScreen
-                {...props}
-                theme={currentTheme}
-                textSize={baseTextSize}
-                isKeyboardMode={isKeyboardMode}
-              />
-            )}
-          </Stack.Screen>
+                  <TouchableOpacity onPress={() => setIsSettingsOpen(true)}>
+                    <Ionicons name="settings-sharp" size={24} color={currentTheme.text} />
+                  </TouchableOpacity>
+                </View>
+              ),
+              contentStyle: { backgroundColor: currentTheme.bg }
+            })}
+          >
+            <Stack.Screen name="Home">
+              {(props) => (
+                <HomeScreen
+                  {...props}
+                  theme={currentTheme}
+                  textSize={baseTextSize}
+                  isKeyboardMode={isKeyboardMode}
+                />
+              )}
+            </Stack.Screen>
 
-          <Stack.Screen name="Category">
-            {(props) => (
-              <CategoryScreen
-                {...props}
-                theme={currentTheme}
-                textSize={baseTextSize}
-                isKeyboardMode={isKeyboardMode}
-              />
-            )}
-          </Stack.Screen>
-        </Stack.Navigator>
+            <Stack.Screen name="Category">
+              {(props) => (
+                <CategoryScreen
+                  {...props}
+                  theme={currentTheme}
+                  textSize={baseTextSize}
+                  isKeyboardMode={isKeyboardMode}
+                />
+              )}
+            </Stack.Screen>
+          </Stack.Navigator>
 
-        <SettingsModal
-          visible={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          theme={currentTheme}
-          textSizeMode={textSizeMode} setTextSizeMode={setTextSizeMode}
-          voicePitch={voicePitch} setVoicePitch={setVoicePitch}
-          speechRate={speechRate} setSpeechRate={setSpeechRate}
-          availableVoices={availableVoices}
-          selectedVoice={selectedVoice} setSelectedVoice={setSelectedVoice}
-        />
+          <SettingsModal
+            visible={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            theme={currentTheme}
+            textSizeMode={textSizeMode} setTextSizeMode={setTextSizeMode}
+            voicePitch={voicePitch} setVoicePitch={setVoicePitch}
+            speechRate={speechRate} setSpeechRate={setSpeechRate}
+            availableVoices={availableVoices}
+            selectedVoice={selectedVoice} setSelectedVoice={setSelectedVoice}
+            onOpenAdmin={() => {
+              setIsSettingsOpen(false); // Close settings
+              setIsAdminOpen(true);     // Open admin
+            }}
+          />
 
-      </NavigationContainer>
-    </SentenceProvider>
+          <AdminModal
+            visible={isAdminOpen}
+            onClose={() => setIsAdminOpen(false)}
+            theme={currentTheme}
+          />
+
+        </NavigationContainer>
+      </SentenceProvider>
+    </VocabProvider>
   );
 }

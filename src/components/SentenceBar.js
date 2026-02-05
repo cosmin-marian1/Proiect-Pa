@@ -16,7 +16,7 @@ export default function SentenceBar({ theme, isKeyboardMode, textSize }) {
     };
 
     return (
-        <View style={[styles.sentenceBarContainer, { backgroundColor: theme.bar, borderBottomColor: theme.border }]}>
+        <View style={[styles.sentenceBarContainer, { backgroundColor: theme.bar }]}>
 
             <View style={[styles.displayArea, { backgroundColor: theme.inputBg }]}>
                 {isKeyboardMode ? (
@@ -71,7 +71,7 @@ export default function SentenceBar({ theme, isKeyboardMode, textSize }) {
 
 const styles = StyleSheet.create({
     sentenceBarContainer: {
-        padding: 10, borderBottomWidth: 1,
+        padding: 10,
         elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1,
         zIndex: 9, flexDirection: 'column', gap: 10
     },

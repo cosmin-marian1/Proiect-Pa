@@ -1,12 +1,18 @@
 
 import React, { useLayoutEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
+import { useVocab } from '../context/VocabContext';
 import { useSentence } from '../context/SentenceContext';
 import { getBorderColor } from '../constants/theme';
 import SentenceBar from '../components/SentenceBar';
+import ScaleButton from '../components/ScaleButton';
+import FadeInView from '../components/FadeInView';
 
 export default function CategoryScreen({ route, navigation, theme, textSize, isKeyboardMode }) {
-    const { category } = route.params;
+    const { categoryId } = route.params;
+    const { categories } = useVocab();
+    const category = categories.find(c => c.id === categoryId);
+    if (!category) return null; // Safety check
     const { addToSentence } = useSentence();
 
     useLayoutEffect(() => {
@@ -44,22 +50,23 @@ export default function CategoryScreen({ route, navigation, theme, textSize, isK
                     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
                         <View style={styles.grid}>
                             {category.items.map((item, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.7}
-                                    style={[
-                                        styles.card,
-                                        { borderColor: getBorderColor(item.type), backgroundColor: theme.card }
-                                    ]}
-                                    onPress={() => addToSentence(item)}
-                                >
-                                    {item.image ? (
-                                        <Image source={{ uri: item.image }} style={styles.cardImage} />
-                                    ) : (
-                                        <Text style={{ fontSize: 60, marginBottom: 10 }}>{item.emoji || '❓'}</Text>
-                                    )}
-                                    <Text style={[styles.cardText, { color: theme.text, fontSize: textSize * 1.1 }]}>{item.label}</Text>
-                                </TouchableOpacity>
+                                <FadeInView key={index} delay={index * 40}>
+                                    <ScaleButton
+                                        activeOpacity={0.7}
+                                        style={[
+                                            styles.card,
+                                            { borderColor: getBorderColor(item.type), backgroundColor: theme.card }
+                                        ]}
+                                        onPress={() => addToSentence(item)}
+                                    >
+                                        {item.image ? (
+                                            <Image source={{ uri: item.image }} style={styles.cardImage} />
+                                        ) : (
+                                            <Text style={{ fontSize: 60, marginBottom: 10 }}>{item.emoji || '❓'}</Text>
+                                        )}
+                                        <Text style={[styles.cardText, { color: theme.text, fontSize: textSize * 1.1 }]}>{item.label}</Text>
+                                    </ScaleButton>
+                                </FadeInView>
                             ))}
                         </View>
                     </ScrollView>

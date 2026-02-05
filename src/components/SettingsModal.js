@@ -9,7 +9,8 @@ export default function SettingsModal({
     textSizeMode, setTextSizeMode,
     voicePitch, setVoicePitch,
     speechRate, setSpeechRate,
-    availableVoices, selectedVoice, setSelectedVoice
+    availableVoices, selectedVoice, setSelectedVoice,
+    onOpenAdmin
 }) {
 
     const testVoice = () => {
@@ -120,6 +121,15 @@ export default function SettingsModal({
                                 thumbTintColor={theme.accent}
                             />
                         </View>
+
+                        <View style={styles.separator} />
+
+                        <TouchableOpacity
+                            style={[styles.testBtn, { borderColor: theme.accent, backgroundColor: theme.activeCat }]}
+                            onPress={onOpenAdmin}
+                        >
+                            <Text style={{ color: theme.accent, fontWeight: 'bold' }}>🛠️ Administrare Vocabular</Text>
+                        </TouchableOpacity>
 
                         <TouchableOpacity
                             style={[styles.testBtn, { borderColor: theme.accent }]}
